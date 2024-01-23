@@ -14,6 +14,17 @@ jan-scraper: interact with Jan.ai by sending messages and retrieving the respons
 ```bash
 python3 -m pip install jan-scraper
 ```
+- Now open your python idle and do the following:
+```bash
+python3
+Python 3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from jan_scraper.scraper import get_package_location
+>>> get_package_location()
+'path\\to\\jan_scraper'
+```
+- Go to the [GitHub image directory](https://github.com/AstraBert/jan-scraper/tree/main/imgs) and download the images: now, move them to `'path\\to\\jan_scraper'` as obtained before. Everything should be then set to run!
+
 
 ## Requirements
 
