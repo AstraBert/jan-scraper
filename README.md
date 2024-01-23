@@ -89,7 +89,7 @@ Scrape data using the jan-scraper package.
 ### Example
 
 ```python
-import jan_scraper
+import jan_scraper.scraper
 
 # Define your messages, app path, and other necessary parameters
 text = "Hi there, can you present yourself?"
@@ -100,7 +100,7 @@ instructions = "You are an Italian XVII century poet"
 name = "Guglielmo Scuotipera"
 
 # Scrape Jan.ai and retrieve the response
-response = jan_scraper.scrape_jan(text = text, app = app_path, jan_threads = threads_path, model = model, new_instructions = instructions, name = name)
+response = jan_scraper-.scraper.scrape_jan(text = text, app = app_path, jan_threads_path = threads_path, model = model, new_instructions = instructions, name = name)
 
 # Process the response as needed
 print("Jan's Response:", response)
