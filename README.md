@@ -1,13 +1,15 @@
-# jan-scraper
+# jan-scraper 
 jan-scraper: interact with Jan.ai by sending messages and retrieving the response
+
+⚠️DISCLAIMER: This version is stil a beta and it is built for small, end-user, customizable projects. It is not optimized for scaling LLMs on large applications: we will get there, but for now, we are still far.
 
 ## Overview
 
-**jan-scraper** is a Python package that provides a convenient interface to interact with Jan.ai. Jan.ai is an open-source desktop app designed to run large language models (LLMs) locally, ensuring an offline and privacy-focused environment. With **jan-scraper**, you can easily send messages to Jan.ai and retrieve responses, making it a versatile tool for leveraging Jan.ai's capabilities programmatically.
+**jan-scraper** is a Python package that provides a convenient interface to interact with Jan.ai. Jan.ai is an open-source desktop app designed to run large language models (LLMs) locally, ensuring an offline and privacy-focused environment. With **jan-scraper**, you can easily send messages to Jan and retrieve responses, making it a versatile tool for leveraging Jan's capabilities programmatically.
 
 ## Installation
 
-- First and foremost, you need Jan.ai installed on your machine, and you need to download at least one of the models that the app suggests.
+- First and foremost, you need Jan.ai installed on your machine and you need to download at least one of the models that the app suggests.
 
 - Now, you can install **jan-scraper** using `pip`:
 
