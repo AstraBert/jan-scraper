@@ -110,12 +110,12 @@ This function automates the activation of some application named Jan through a s
 
 This function uses the previously defined `activate_jan_api` function and interacts with the API related to the Jan application, to obtain responses to user inputs. 
 
-⚠️**PRIOR TO USING THIS FUNCTION** it is better to have already activate Jan API in your app and have initialized the model you want to exploit; to do so:
+⚠️**PRIOR TO USING THIS FUNCTION** it is better to have already activated Jan API in your app and have initialized the model you want to exploit; to do so:
 
 1. `Settings > Advanced > Enable API Server`
 2. `Settings > Models > ... > Start Model`
 
-You could, in theory, exploit the `auto` parameter setting it to True, but this implies doing GUI operations that may not result in the activation of your desired model.
+You could, in theory, exploit the `auto` parameter setting it to True, but this involves GUI operations that may not result in the activation of your desired model.
 
 - **Parameters**:
   - `text`: User input text.
