@@ -1,7 +1,8 @@
 # jan-scraper 
 jan-scraper: interact with Jan.ai by sending messages and retrieving the response
 
-⚠️DISCLAIMER: This version is stil a beta and it is built for small, end-user, customizable projects. It is not optimized for scaling LLMs on large applications: we will get there, but for now, we are still far.
+⚠️DISCLAIMER: This version is still a beta and it is built for small, end-user, customizable projects. The implementation of API scraping brings us closer to the result of optimized scaling for large LLM application in daily life, but we're still far from what we can reach... Stay tuned!
+
 
 ## Overview
 
@@ -9,7 +10,7 @@ jan-scraper: interact with Jan.ai by sending messages and retrieving the respons
 
 ## Installation
 
-- First and foremost, you need Jan.ai installed on your machine and you need to download at least one of the models that the app suggests.
+- First and foremost, you need Jan.ai installed on your machine, and you need to download at least one of the models that the app suggests.
 
 - Now, you can install **jan-scraper** using `pip`:
 
@@ -88,6 +89,47 @@ Scrape data using the jan-scraper package.
 - **Returns:**
   - `str`: Resulting message from jan-scraper.
 
+### `activate_jan_api` Function:
+
+This function automates the activation of some application named Jan through a series of GUI interactions using the `pyautogui` library. Here's a step-by-step explanation:
+
+- **Parameters**:
+  - `app`: The application to be activated.
+  - `is_already_active`: A boolean indicating whether the application is already active.
+
+- **Function Flow**:
+  1. Obtain the directory of the package using `get_package_location()`.
+  2. If the application is not already active:
+     - Start the application using `subprocess.Popen(app)`.
+     - Continuously check for the presence of an image (settings.png) on the screen, indicating that the application has opened.
+     - Click on the located image to proceed.
+     - Similarly, wait for and interact with images (advanced.png, api.png, models.png, activ.png, start.png, starting.png, reduce.png) on the screen.
+  3. If the application is already active, do nothing (`pass`).
+
+### `scrape_jan_through_api` Function:
+
+This function uses the previously defined `activate_jan_api` function and interacts with the API related to the Jan application, to obtain responses to user inputs.
+
+- **Parameters**:
+  - `text`: User input text.
+  - `app`: The application to be activated.
+  - `model`: The model to be used in the API request.
+  - `is_already_open`: A boolean indicating whether the application is already open.
+  - `new_instructions`: Additional instructions for the system content.
+  - `name`: Name of the assistant.
+  - `description`: Description of the assistant.
+
+- **Function Flow**:
+  1. Activate the Jan application using the `activate_jan_api` function.
+  2. Create system content based on provided parameters.
+  3. Check if a file named "response.json" exists and truncate it if it does.
+  4. If the file doesn't exist, create it.
+  5. Construct a command to make a `curl` request to an API endpoint.
+  6. Execute the command using `subprocess.run`.
+  7. If the command is successful, parse the JSON response from "response.json" and return the content of the first choice message. If not, return an error message.
+
+
+
 ### Example
 
 ```python
@@ -106,13 +148,18 @@ response = jan_scraper.scraper.scrape_jan(text = text, app = app_path, jan_threa
 
 # Process the response as needed
 print("Jan's Response:", response)
+
+# Scrape Jan.ai through API and retrieve the response
+response = jan_scraper.scraper.scrape_jan_through_api(app="/Users/Daniele/AppData/Local/Programs/jan/Jan.exe", is_already_open=False, model="tinyllama-1.1b", text="How is it to be ruling on such a big Empire?", name="Carolus Magnus", new_instructions="You are an emperor from the Middle Ages")
+
+print("Jan's Response:", response)
 ```
 
-Find a more elaborate user case in [user_case.py](./user_case.py)
+Find a more elaborate user case in [user_case.py](https://github.com/AstraBert/jan-scraper/tree/main/user_case.py)
 
 ## License
 
-This project is licensed under the AGPL-v3.0 License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the AGPL-v3.0 License - see the [LICENSE](https://github.com/AstraBert/jan-scraper/tree/main/LICENSE) file for details.
 
 ## Acknowledgments
 
