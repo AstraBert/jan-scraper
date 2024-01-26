@@ -6,6 +6,7 @@ import platform
 import os
 import sys
 from jan_scraper import UnableToFindLocationError
+from pyautogui import ImageNotFoundException
 
 
 def get_directory_info(path):
@@ -121,7 +122,6 @@ def scrape_jan(text, app, jan_threads_path, model, new_instructions="You are a h
     Returns:
         str: Resulting message from jan-scraper.
     """
-    # ... (rest of the code with comments explaining each step)
     packdir = get_package_location()
     approx_start = time.time()
     try:
@@ -201,3 +201,115 @@ def scrape_jan(text, app, jan_threads_path, model, new_instructions="You are a h
     except Exception as e:
         print(f"An error occurred: {e}")
         sys.exit(1)
+
+
+def activate_jan_api(app, is_already_active: bool):
+    """
+    Activate the Jan application through GUI interactions.
+
+    Parameters:
+    - app (str): The application to be activated.
+    - is_already_active (bool): Indicates whether the application is already active.
+
+    Note: Requires the use of the pyautogui library for GUI interactions.
+    """
+    packdir = get_package_location()
+    if not is_already_active:
+        subprocess.Popen(app)
+        time.sleep(7)
+        jan_is_open = False
+        while not jan_is_open:
+            try:
+                x_loc, y_loc, h_loc, wd_loc = pyautogui.locateOnScreen(os.path.join(packdir,"settings.png"))
+                jan_is_open = True
+            except Exception:
+                print("Waiting for Jan to open...", file=sys.stderr)
+                jan_is_open = False
+                time.sleep(2)
+        pyautogui.click(x_loc+2, y_loc+2)
+        time.sleep(2)
+        advanced_are_open = False
+        while not advanced_are_open:
+            try:
+                x_loc, y_loc, h_loc, wd_loc = pyautogui.locateOnScreen(os.path.join(packdir,"advanced.png"))
+                advanced_are_open = True
+            except Exception:
+                print("Waiting for Advanced to pop up...", file=sys.stderr)
+                advanced_are_open = False
+                time.sleep(2)
+        pyautogui.click(x_loc+2, y_loc+2)
+        time.sleep(4)
+        api_is_there = False
+        while not api_is_there:
+            try:
+                x_loc, y_loc, h_loc, wd_loc = pyautogui.locateOnScreen(os.path.join(packdir,"api.png"))
+                api_is_there = True
+            except Exception:
+                print("Waiting for Advanced page to load...", file=sys.stderr)
+                api_is_there = False
+                time.sleep(2)
+        pyautogui.click(x_loc+wd_loc/2, y_loc+h_loc/2-12)
+        time.sleep(2)
+        x_loc, y_loc, h_loc, wd_loc = pyautogui.locateOnScreen(os.path.join(packdir,"models.png"))
+        pyautogui.click(x_loc+5, y_loc+5)
+        time.sleep(2)
+        x_loc, y_loc, h_loc, wd_loc = pyautogui.locateOnScreen(os.path.join(packdir,"activ.png"))
+        pyautogui.click(x_loc+12, y_loc+7)
+        time.sleep(2)
+        x_loc, y_loc, h_loc, wd_loc = pyautogui.locateOnScreen(os.path.join(packdir,"start.png"))
+        pyautogui.click(x_loc+2, y_loc+2)
+        time.sleep(5)
+        is_started = False
+        while not is_started:
+            try:
+                print("Waiting for model to start...", file=sys.stderr)
+                x_loc, y_loc, h_loc, wd_loc = pyautogui.locateOnScreen(os.path.join(packdir,"starting.png"))
+                is_started = False
+                time.sleep(1)
+            except ImageNotFoundException:
+                is_started = True
+        time.sleep(2)
+        x_loc, y_loc, h_loc, wd_loc = pyautogui.locateOnScreen(os.path.join(packdir,"reduce.png"))
+        pyautogui.click(x_loc+2, y_loc+2)
+    else:
+        pass
+
+def scrape_jan_through_api(text, app, model, is_already_open, new_instructions="You are a helpful assistant",name="Jan", description="A default assistant that can use all downloaded models"):
+    """
+    Scrape responses from the Jan application through an API.
+
+    Parameters:
+    - text (str): User input text.
+    - app (str): The application to be activated.
+    - model (str): The model to be used in the API request.
+    - is_already_open (bool): Indicates whether the application is already open.
+    - new_instructions (str): Additional instructions for the system content.
+    - name (str): Name of the assistant.
+    - description (str): Description of the assistant.
+
+    Returns:
+    - str: Response obtained from the API.
+
+    Note: Requires the use of the pyautogui library for GUI interactions.
+    """
+    activate_jan_api(app,is_already_open)
+    system_content = f"Your name is {name} You can be described as {description} You have to follow these instructions {new_instructions}"
+    response_exists = os.path.isfile("response.json")
+    if response_exists:
+        f = open("response.json", "r+")
+        f.seek(0)
+        f.truncate()
+        f.close()
+    elif not response_exists:
+        f = open("response.json", "w")
+        f.close()
+
+    command = "curl http://localhost:1337/v1/chat/completions -H \"Content-Type: application/json\" -d \"{\\\"model\\\": \\\"" + model + "\\\", \\\"messages\\\": [{\\\"role\\\": \\\"system\\\", \\\"content\\\": \\\""+ system_content +"\\\"}, {\\\"role\\\": \\\"user\\\", \\\"content\\\": \\\""+text+"\\\"}]}\" > response.json"
+
+    cmd = subprocess.run(command, shell=True)
+
+    if cmd.returncode == 0:
+        results = parse_jsonl_file("response.json")
+        return results[0]["choices"][0]["message"]["content"]
+    else:
+        return "Something went wrong"
