@@ -150,7 +150,7 @@ response = jan_scraper.scraper.scrape_jan(text = text, app = app_path, jan_threa
 print("Jan's Response:", response)
 
 # Scrape Jan.ai through API and retrieve the response
-response = jan_scraper.scraper.scrape_jan_through_api(app="/Users/USer/AppData/Local/Programs/jan/Jan.exe", is_already_open=False, model="tinyllama-1.1b", text="How is it to be ruling on such a big Empire?", name="Carolus Magnus", new_instructions="You are an emperor from the Middle Ages")
+response = jan_scraper.scraper.scrape_jan_through_api(app="/path/to/jan-app", is_already_open=False, model="tinyllama-1.1b", text="How is it to be ruling on such a big Empire?", name="Carolus Magnus", new_instructions="You are an emperor from the Middle Ages")
 
 print("Jan's Response:", response)
 ```
