@@ -5,8 +5,10 @@ import subprocess
 import platform
 import os
 import sys
+import warnings
 from jan_scraper import UnableToFindLocationError
 from pyautogui import ImageNotFoundException
+from jan_scraper import MayActivateOnlyOneModelWarning
 
 
 def get_directory_info(path):
@@ -220,6 +222,7 @@ def activate_jan_api(app, is_already_active: bool):
         jan_is_open = False
         while not jan_is_open:
             try:
+                print(os.path.join(packdir,"settings.png"))
                 x_loc, y_loc, h_loc, wd_loc = pyautogui.locateOnScreen(os.path.join(packdir,"settings.png"))
                 jan_is_open = True
             except Exception:
@@ -253,28 +256,34 @@ def activate_jan_api(app, is_already_active: bool):
         x_loc, y_loc, h_loc, wd_loc = pyautogui.locateOnScreen(os.path.join(packdir,"models.png"))
         pyautogui.click(x_loc+5, y_loc+5)
         time.sleep(2)
-        x_loc, y_loc, h_loc, wd_loc = pyautogui.locateOnScreen(os.path.join(packdir,"activ.png"))
-        pyautogui.click(x_loc+12, y_loc+7)
-        time.sleep(2)
-        x_loc, y_loc, h_loc, wd_loc = pyautogui.locateOnScreen(os.path.join(packdir,"start.png"))
-        pyautogui.click(x_loc+2, y_loc+2)
-        time.sleep(5)
-        is_started = False
-        while not is_started:
+        matches = pyautogui.locateAllOnScreen(os.path.join(packdir,"activ.png"))
+        for match in matches:
+            x_loc, y_loc, h_loc, wd_loc = match
+            pyautogui.click(x_loc+12, y_loc+8)
+            time.sleep(4)
             try:
-                print("Waiting for model to start...", file=sys.stderr)
-                x_loc, y_loc, h_loc, wd_loc = pyautogui.locateOnScreen(os.path.join(packdir,"starting.png"))
-                is_started = False
-                time.sleep(1)
+                x_loc, y_loc, h_loc, wd_loc = pyautogui.locateOnWindow(os.path.join(packdir,"start.png"),title="Jan")
+                pyautogui.click(x_loc+2, y_loc+2)
             except ImageNotFoundException:
-                is_started = True
-        time.sleep(2)
+                x_loc, y_loc, h_loc, wd_loc = pyautogui.locateOnWindow(os.path.join(packdir,"triangle.png"),title="Jan")
+                pyautogui.click(x_loc+2, y_loc+2)
+            time.sleep(5)
+            is_started = False
+            while not is_started:
+                try:
+                    print("Waiting for model to start...", file=sys.stderr)
+                    x_loc, y_loc, h_loc, wd_loc = pyautogui.locateOnScreen(os.path.join(packdir,"starting.png"))
+                    is_started = False
+                    time.sleep(1)
+                except ImageNotFoundException:
+                    is_started = True
+            time.sleep(2)
         x_loc, y_loc, h_loc, wd_loc = pyautogui.locateOnScreen(os.path.join(packdir,"reduce.png"))
         pyautogui.click(x_loc+2, y_loc+2)
     else:
         pass
 
-def scrape_jan_through_api(text, app, model, is_already_open, new_instructions="You are a helpful assistant",name="Jan", description="A default assistant that can use all downloaded models"):
+def scrape_jan_through_api(text, app, model, new_instructions="You are a helpful assistant",name="Jan", description="A default assistant that can use all downloaded models",auto=False):
     """
     Scrape responses from the Jan application through an API.
 
@@ -282,17 +291,19 @@ def scrape_jan_through_api(text, app, model, is_already_open, new_instructions="
     - text (str): User input text.
     - app (str): The application to be activated.
     - model (str): The model to be used in the API request.
-    - is_already_open (bool): Indicates whether the application is already open.
     - new_instructions (str): Additional instructions for the system content.
     - name (str): Name of the assistant.
     - description (str): Description of the assistant.
+    - auto (bool): Automatically activate Jan API through GUI operations (unstable, better setting it to False)
 
     Returns:
     - str: Response obtained from the API.
 
     Note: Requires the use of the pyautogui library for GUI interactions.
     """
-    activate_jan_api(app,is_already_open)
+    if auto:
+        warnings.warn("The automatized API opening may lead to the initialization of only one model, and it may not be the desired one; if you don't want this to happen, set the auto parameter to False and activate API for desired model manually", MayActivateOnlyOneModelWarning)
+        activate_jan_api(app,is_already_open=False)
     system_content = f"Your name is {name} You can be described as {description} You have to follow these instructions {new_instructions}"
     response_exists = os.path.isfile("response.json")
     if response_exists:
