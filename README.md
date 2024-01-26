@@ -108,13 +108,20 @@ This function automates the activation of some application named Jan through a s
 
 ### `scrape_jan_through_api` Function:
 
-This function uses the previously defined `activate_jan_api` function and interacts with the API related to the Jan application, to obtain responses to user inputs.
+This function uses the previously defined `activate_jan_api` function and interacts with the API related to the Jan application, to obtain responses to user inputs. 
+
+⚠️**PRIOR TO USING THIS FUNCTION** it is better to have already activate Jan API in your app and have initialized the model you want to exploit; to do so:
+
+1. `Settings > Advanced > Enable API Server`
+2. `Settings > Models > ... > Start Model`
+
+You could, in theory, exploit the `auto` parameter setting it to True, but this implies doing GUI operations that may not result in the activation of your desired model.
 
 - **Parameters**:
   - `text`: User input text.
   - `app`: The application to be activated.
   - `model`: The model to be used in the API request.
-  - `is_already_open`: A boolean indicating whether the application is already open.
+  - `auto`: If true, automatically activate Jan API through GUI operations (unstable, better setting it to False)
   - `new_instructions`: Additional instructions for the system content.
   - `name`: Name of the assistant.
   - `description`: Description of the assistant.
@@ -149,13 +156,16 @@ response = jan_scraper.scraper.scrape_jan(text = text, app = app_path, jan_threa
 # Process the response as needed
 print("Jan's Response:", response)
 
-# Scrape Jan.ai through API and retrieve the response
-response = jan_scraper.scraper.scrape_jan_through_api(app="/path/to/jan-app", is_already_open=False, model="tinyllama-1.1b", text="How is it to be ruling on such a big Empire?", name="Carolus Magnus", new_instructions="You are an emperor from the Middle Ages")
+# 1. Open Jan
+# 2. Settings > Advanced > Enable API Server
+# 3. Settings > Models > ... > Start Model
+# 4. Scrape Jan API with the following function 
+response = jan_scraper.scraper.scrape_jan_through_api(app="/path/to/jan-app", auto=False, model="tinyllama-1.1b", text="How is it to be ruling on such a big Empire?", name="Carolus Magnus", new_instructions="You are an emperor from the Middle Ages")
 
 print("Jan's Response:", response)
 ```
 
-Find a more elaborate user case in [user_case.py](https://github.com/AstraBert/jan-scraper/tree/main/user_case.py)
+Find more elaborate user cases in [user_case_noAPI.py](https://github.com/AstraBert/jan-scraper/tree/main/user_case_noAPI.py) and in [user_case_API.py](https://github.com/AstraBert/jan-scraper/tree/main/user_case_API.py).
 
 ## License
 
