@@ -1,4 +1,6 @@
-"""This user case walks you through building a python copilot exploiting deepseek-coder-1.3b in Jan (you have to download it if you want this project to function). The result will be a Telegram bot that will respond to your code inquiries and will refactor your python code."""
+"""This user case walks you through building a python copilot exploiting deepseek-coder-1.3b 
+in Jan (you have to download it if you want this project to function). 
+The result will be a Telegram bot that will respond to your code inquiries and will refactor your python code."""
 
 
 from jan_scraper.scraper import scrape_jan_through_api
