@@ -37,7 +37,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 
 ## Functions
 
-### `get_directory_info(path)`
+### `scraper.get_directory_info(path)`
 
 Get the last modified time of a folder.
 
@@ -46,7 +46,7 @@ Get the last modified time of a folder.
 - **Returns:**
   - `float`: Last modified time of the folder.
 
-### `define_assistant(json_file_path, new_instructions, model, name="Jan", description="A default assistant that can use all downloaded models")`
+### `scraper.define_assistant(json_file_path, new_instructions, model, name="Jan", description="A default assistant that can use all downloaded models")`
 
 Update the assistant's configuration in a JSON file.
 
@@ -57,7 +57,7 @@ Update the assistant's configuration in a JSON file.
   - `name (str)`: Assistant's name.
   - `description (str)`: Assistant's description.
 
-### `parse_jsonl_file(file_path)`
+### `scraper.parse_jsonl_file(file_path)`
 
 Parse a JSON Lines file and return a list of JSON objects.
 
@@ -66,14 +66,14 @@ Parse a JSON Lines file and return a list of JSON objects.
 - **Returns:**
   - `list`: List of parsed JSON objects.
 
-### `get_package_location()`
+### `scraper.get_package_location()`
 
 Get the location of the installed jan-scraper package.
 
 - **Returns:**
   - `str`: Location of the jan-scraper package.
 
-### `scrape_jan(text, app, jan_threads_path, model, new_instructions="You are a helpful assistant", name="Jan", description="A default assistant that can use all downloaded models", set_new_thread=True)`
+### `scraper.scrape_jan(text, app, jan_threads_path, model, new_instructions="You are a helpful assistant", name="Jan", description="A default assistant that can use all downloaded models", set_new_thread=True)`
 
 Scrape data using the jan-scraper package.
 
@@ -89,7 +89,7 @@ Scrape data using the jan-scraper package.
 - **Returns:**
   - `str`: Resulting message from jan-scraper.
 
-### `activate_jan_api` Function:
+### `scraper.activate_jan_api` Function:
 
 This function automates the activation of some application named Jan through a series of GUI interactions using the `pyautogui` library. Here's a step-by-step explanation:
 
@@ -106,7 +106,7 @@ This function automates the activation of some application named Jan through a s
      - Similarly, wait for and interact with images (advanced.png, api.png, models.png, activ.png, start.png, starting.png, reduce.png) on the screen.
   3. If the application is already active, do nothing (`pass`).
 
-### `scrape_jan_through_api` Function:
+### `scraper.scrape_jan_through_api` Function:
 
 This function uses the previously defined `activate_jan_api` function and interacts with the API related to the Jan application, to obtain responses to user inputs. 
 
@@ -135,6 +135,18 @@ You could, in theory, exploit the `auto` parameter setting it to True, but this 
   6. Execute the command using `subprocess.run`.
   7. If the command is successful, parse the JSON response from "response.json" and return the content of the first choice message. If not, return an error message.
 
+### `formatter.convert_code_to_curl_json`
+
+Convert a Python code string to a format suitable for inclusion in a JSON string within a curl command.
+
+**Parameters**
+- `code` (str): Python code string.
+
+**Returns**
+- `str`: JSON-formatted string suitable for inclusion in a curl command.
+
+**Description**
+This function takes a Python code string as input and escapes backslashes and double quotes within the code to prepare it for inclusion in a JSON string within a curl command. It also replaces newline characters with '\\n' to ensure proper formatting in the JSON representation.
 
 
 ### Example
