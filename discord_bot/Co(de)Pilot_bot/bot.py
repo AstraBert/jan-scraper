@@ -65,7 +65,7 @@ def refactor_code(pydocument, filename):
     msg = f"Refactor the following code\\n {fmtcode}"
     f.close()
     response = scrape_jan_through_api(
-        app="/Users/Daniele/AppData/Local/Programs/jan/Jan.exe",
+        app="/Users/User/AppData/Local/Programs/jan/Jan.exe",
         model="deepseek-coder-1.3b",
         text=msg,
         name="Co(de)Pilot",
@@ -93,7 +93,7 @@ def generate_code(message):
     """Generate Python code using jan_scraper."""
     msg = f"Write a python code to do the following\\n {message}"
     response = scrape_jan_through_api(
-        app="/Users/Daniele/AppData/Local/Programs/jan/Jan.exe",
+        app="/Users/User/AppData/Local/Programs/jan/Jan.exe",
         model="deepseek-coder-1.3b",
         text=msg,
         name="CodeCopilot",
