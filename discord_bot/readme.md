@@ -33,10 +33,12 @@ Here is what the bot will do for you:
 
 For this, you will need Deepseek Coder 1.3B Q8 installed in Jan.
 
-Now follow these step:
+Now follow these steps:
 ```bash
 ## Go to the Co(de)Pilot_bot directory
 cd Co(de)Pilot_bot
+## Initialize the database
+python3 init_db.py
 ## Open bot.py with your favorite code editor
 code bot.py
 ```
@@ -52,7 +54,7 @@ python3 bot.py
 
 Your bot should send a message in the #general channel, such as "The bot was activated at: TIME"; this means you can use it! 
 
-Open the chat with the bot and prompt some messages... Here are some examples of its functionalities:
+Open the chat with the bot and prompt some messages... Here is an example of what you can get:
 
 ![codepilot_bot](imgs/codepilot.png)
 
@@ -65,7 +67,7 @@ For this, you will need Llama 2 Chat 7B Q4 installed in Jan.
 
 ⚠️:Keep in mind that, being LLama 2 Chat 7B Q4 a quite heavy model (3.8 GB), you will need at least a good 8 GB RAM to make it run fine (even thought not really fast). If you want to get more quickness and efficiency, consider moving to a 16 GB RAM or higher machine.  
 
-Now follow these step:
+Now follow these steps:
 ```bash
 ## Go to the RespectFeelNess_bot directory
 cd RespectFeelNess_bot
@@ -84,7 +86,6 @@ python3 bot.py
 
 Your bot should send a message in the #general channel, such as "The bot was activated at: TIME"; this means you can use it! 
 
-Open the chat with the bot and prompt some messages... Here are some examples of its functionalities:
+Open the chat with the bot and prompt some messages... Here is an example of what you can get:
 
 ![codepilot_bot](imgs/respectfeelness.png)
-
