@@ -165,7 +165,7 @@ response = jan_scraper.scraper.scrape_jan_through_api(app="/path/to/jan-app", au
 print("Jan's Response:", response)
 ```
 
-Find more elaborate user cases in [user_case_noAPI.py](https://github.com/AstraBert/jan-scraper/tree/main/user_case_noAPI.py) and in [user_case_API.py](https://github.com/AstraBert/jan-scraper/tree/main/user_case_API.py).
+Find more elaborate user cases in [user_case_noAPI.py](https://github.com/AstraBert/jan-scraper/tree/main/user_case_noAPI.py) and in [user_case_API.py](https://github.com/AstraBert/jan-scraper/tree/main/user_case_API.py). Make sure also not to miss the [Discord bot application user cases](https://github.com/AstraBert/jan-scraper/tree/main/discord_bot)!🐍
 
 ## License
 
