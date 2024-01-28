@@ -4,8 +4,8 @@ import time
 import pandas as pd
 
 
-CHANNEL_ID = 1200892425946796195
-TOKEN = "MTIwMTI2NTYwNTAwNTgwMzYzMg.G6e90S.qBXGr43CycqUSxM44SiAMPhjPlJ8uc8uCBMJ20"
+CHANNEL_ID = 0
+TOKEN = ""
 
 intents = Intents.default()
 intents.messages = True
@@ -74,7 +74,7 @@ async def on_message(message):
             c = open("queue.csv","a")
             c.write(f"{job_time},{str(job_author)}\n")
             c.close()
-            response = scrape_jan_through_api(str(message.content), app="/Users/Daniele/AppData/Local/Programs/jan/Jan.exe",model="llama2-chat-7b-q4",new_instructions="You are a wellbeing assistant focused on making people feeling comfortable and respected at every moment")
+            response = scrape_jan_through_api(str(message.content), app="/Users/User/AppData/Local/Programs/jan/Jan.exe",model="llama2-chat-7b-q4",new_instructions="You are a wellbeing assistant focused on making people feeling comfortable and respected at every moment")
             c = open("queue.csv","r+")
             lines = c.readlines()
             c.seek(0)
