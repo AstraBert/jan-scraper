@@ -3,6 +3,7 @@ jan-scraper: interact with Jan.ai by sending messages and retrieving the respons
 
 ⚠️DISCLAIMER: This version is still a beta and it is built for small, end-user, customizable projects. The implementation of API scraping brings us closer to the result of optimized scaling for large LLM application in daily life, but we're still far from what we can reach... Stay tuned!
 
+⚠️**WARNING**: jan-scraper v0.0.3b0 still refers (for GUI operations) to Jan 0.4.4! Adaptation for 0.4.5 is underway and will come in the next few days...
 
 ## Overview
 
