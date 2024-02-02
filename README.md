@@ -3,7 +3,6 @@ jan-scraper: interact with Jan.ai by sending messages and retrieving the respons
 
 ⚠️DISCLAIMER: This version is still a beta and it is built for small, end-user, customizable projects. The implementation of API scraping brings us closer to the result of optimized scaling for large LLM application in daily life, but we're still far from what we can reach... Stay tuned!
 
-⚠️**WARNING**: jan-scraper v0.0.3b0 still refers (for GUI operations) to Jan 0.4.4! Adaptation for 0.4.5 is underway and will come in the next few days...
 
 ## Overview
 
@@ -92,49 +91,43 @@ Scrape data using the jan-scraper package.
 
 ### `scraper.activate_jan_api` Function:
 
-This function automates the activation of some application named Jan through a series of GUI interactions using the `pyautogui` library. Here's a step-by-step explanation:
+This function automates the activation of Jan application through a series of GUI interactions using the `pyautogui` library. Here's a step-by-step explanation:
 
 - **Parameters**:
   - `app`: The application to be activated.
-  - `is_already_active`: A boolean indicating whether the application is already active.
 
 - **Function Flow**:
   1. Obtain the directory of the package using `get_package_location()`.
   2. If the application is not already active:
      - Start the application using `subprocess.Popen(app)`.
-     - Continuously check for the presence of an image (settings.png) on the screen, indicating that the application has opened.
+     - Continuously check for the presence of an image (server.png) on the screen, indicating that the application has opened.
      - Click on the located image to proceed.
-     - Similarly, wait for and interact with images (advanced.png, api.png, models.png, activ.png, start.png, starting.png, reduce.png) on the screen.
-  3. If the application is already active, do nothing (`pass`).
 
 ### `scraper.scrape_jan_through_api` Function:
 
 This function uses the previously defined `activate_jan_api` function and interacts with the API related to the Jan application, to obtain responses to user inputs. 
 
-⚠️**PRIOR TO USING THIS FUNCTION** it is better to have already activated Jan API in your app and have initialized the model you want to exploit; to do so:
+You can initialize the model you want to exploit and activate Jan API in your app doing the following:
 
-1. `Settings > Advanced > Enable API Server`
-2. `Settings > Models > ... > Start Model`
+1. `Settings > Models > Your-favourite-model > ... > Start Model`
+2. `Local API server > Choose model to start > Your-favourite-model > Start server`
 
-You could, in theory, exploit the `auto` parameter setting it to True, but this involves GUI operations that may not result in the activation of your desired model.
+From version 0.0.4b0, we decided to deprecate the `auto` parameter. You can, nevertheless, call a function named `scraper.activate_jan_api` to speed up the process of API activation.
 
 - **Parameters**:
   - `text`: User input text.
-  - `app`: The application to be activated.
   - `model`: The model to be used in the API request.
-  - `auto`: If true, automatically activate Jan API through GUI operations (unstable, better setting it to False)
   - `new_instructions`: Additional instructions for the system content.
   - `name`: Name of the assistant.
   - `description`: Description of the assistant.
 
 - **Function Flow**:
-  1. Activate the Jan application using the `activate_jan_api` function.
-  2. Create system content based on provided parameters.
-  3. Check if a file named "response.json" exists and truncate it if it does.
-  4. If the file doesn't exist, create it.
-  5. Construct a command to make a `curl` request to an API endpoint.
-  6. Execute the command using `subprocess.run`.
-  7. If the command is successful, parse the JSON response from "response.json" and return the content of the first choice message. If not, return an error message.
+  1. Create system content based on provided parameters.
+  2. Check if a file named "response.json" exists and truncate it if it does.
+  3. If the file doesn't exist, create it.
+  4. Construct a command to make a `curl` request to an API endpoint.
+  5. Execute the command using `subprocess.run`.
+  6. If the command is successful, parse the JSON response from "response.json" and return the content of the first choice message. If not, return an error message.
 
 ### `formatter.convert_code_to_curl_json`
 
@@ -169,11 +162,15 @@ response = jan_scraper.scraper.scrape_jan(text = text, app = app_path, jan_threa
 # Process the response as needed
 print("Jan's Response:", response)
 
+
+# Wanna speed up Jan opening and API activation? Try the following code!
+jan_scraper.scraper.activate_jan_api(app_path)
+
 # 1. Open Jan
-# 2. Settings > Advanced > Enable API Server
-# 3. Settings > Models > ... > Start Model
+# 1. Settings > Models > Your-favourite-model > ... > Start Model
+# 2. Local API server > Choose model to start > Your-favourite-model > Start server
 # 4. Scrape Jan API with the following function 
-response = jan_scraper.scraper.scrape_jan_through_api(app="/path/to/jan-app", auto=False, model="tinyllama-1.1b", text="How is it to be ruling on such a big Empire?", name="Carolus Magnus", new_instructions="You are an emperor from the Middle Ages")
+response = jan_scraper.scraper.scrape_jan_through_api(model="tinyllama-1.1b", text="How is it to be ruling on such a big Empire?", name="Carolus Magnus", new_instructions="You are an emperor from the Middle Ages")
 
 print("Jan's Response:", response)
 ```
