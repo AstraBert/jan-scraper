@@ -267,7 +267,9 @@ def activate_jan_api(app):
     jan_is_open = False
     while not jan_is_open:
         try:
-            x_loc, y_loc, h_loc, wd_loc = pyautogui.locateOnScreen("server.png")
+            x_loc, y_loc, h_loc, wd_loc = pyautogui.locateOnScreen(
+                os.path.join(packdir, "server.png")
+            )
             jan_is_open = True
         except Exception:
             print("Waiting for Jan to open...", file=sys.stderr)
