@@ -9,7 +9,7 @@ For this tutorial, we will use Co(de)Pilot_bot as an example!
 
 ![jan_api](./tutorial_jan.png)
 
-**2. Go to your terminal and clone `jan-scraper` directory with `git clone`**
+**2. Go to your terminal and clone `jan-scraper` directory with `git clone` (if you are not familiar with git clone, just find another method to download it and place it on your computer)**
 
 ![cloning](./tutorial_jan4.png)
 
