@@ -2,11 +2,12 @@ from discord import Client, File, Intents
 from jan_scraper.scraper import scrape_jan_through_api
 from jan_scraper.formatter import convert_code_to_curl_json
 import os
-import sqlite3
 import time
+import pandas as pd
 
 CHANNEL_ID = 0
 TOKEN = ""
+
 
 
 def get_python_code(lines):
@@ -48,12 +49,10 @@ def refactor_code(pydocument, filename):
     msg = f"Refactor the following code\\n {fmtcode}"
     f.close()
     response = scrape_jan_through_api(
-        app="/Users/User/AppData/Local/Programs/jan/Jan.exe",
         model="deepseek-coder-1.3b",
         text=msg,
         name="Co(de)Pilot",
         new_instructions="You are an helpful python coding assistant",
-        auto=False,
     )
     n = open("code.md", "w")
     n.write(response)
@@ -76,12 +75,10 @@ def generate_code(message):
     """Generate Python code using jan_scraper."""
     msg = f"Write a python code to do the following\\n {message}"
     response = scrape_jan_through_api(
-        app="/Users/User/AppData/Local/Programs/jan/Jan.exe",
         model="deepseek-coder-1.3b",
         text=msg,
         name="CodeCopilot",
         new_instructions="You are an helpful python coding assistant",
-        auto=False,
     )
     n = open("code.md", "w")
     n.write(response)
@@ -109,15 +106,26 @@ bot = Client(intents=intents)
 
 @bot.event
 async def on_ready():
+    leftovers = [str(i) for i in list(pd.read_csv("queue.csv")["JOB_ID"])]
+    if len(leftovers) > 0:
+        print("Cleaning job queue...")
+        c = open("queue.csv", "r+")
+        lines = c.readlines()
+        c.seek(0)
+        c.truncate()
+        for line in lines:
+            if line.split(",")[0] not in leftovers:
+                c.write(line)
+            else:
+                continue
+        c.close()
     channel = bot.get_channel(CHANNEL_ID)
     if channel:
         # Print a confirmation
         print(f"Connected to the channel: {channel.name} ({channel.id})")
 
         # Send the welcome message
-        await channel.send(
-            f"The bot was activated at: {time.time()}"
-        )
+        await channel.send(f"The bot was activated at: {time.time()}")
     else:
         print(
             "Unable to find the specified channel ID. Make sure the ID is correct and the bot has the necessary permissions."
@@ -126,78 +134,128 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    connection = sqlite3.connect("database.db")
-    connection.row_factory = sqlite3.Row
-    
+
     if message.author == bot.user:
         return
 
     if message.attachments:
         print("Received files...")
+        csv = pd.read_csv("queue.csv")
+        queue = list(csv["JOB_ID"])
+        print(
+            f"Got content {message.content} from {message.author} ({type(message.author)})"
+        )
         for attachment in message.attachments:
             await attachment.save("downloads/downloaded_file.py")
-            post = connection.execute("SELECT * FROM queue").fetchall()
-            if len(post) == 0:
+            if len(queue) == 0:
                 job_time = time.time()
-                connection.execute(
-                    "INSERT INTO queue (author, job_id) VALUES (?, ?)",
-                    (str(message.author), job_time),
-                )
+                job_author = message.author
+                c = open("queue.csv", "a")
+                c.write(f"{job_time},{str(job_author)}\n")
+                c.close()
                 print(f"Received file: {attachment.filename}")
                 refactored_code = refactor_code(
                     "downloads/downloaded_file.py", str(attachment.filename)
                 )
-                connection.execute("DELETE from queue WHERE job_id=?", (job_time,))
                 with open(refactored_code, "rb") as file:
                     await message.channel.send(file=File(file))
+                c = open("queue.csv", "r+")
+                lines = c.readlines()
+                c.seek(0)
+                c.truncate()
+                for line in lines:
+                    if line.split(",")[0] != str(job_time) and line.split(",")[
+                        1
+                    ].replace("\n", "") != str(job_author):
+                        c.write(line)
+                    else:
+                        continue
+                c.close()
             else:
-                L = len(post)
-                while L > 0:
-                    L = len(post)
-                    print("Job was queued")
-                    time.sleep(2)
-                job_time = time.time()
-                connection.execute(
-                    "INSERT INTO queue (author, job_id) VALUES (?, ?)",
-                    (str(message.author), job_time),
+                await message.channel.send(
+                    f"Hi {str(message.author)}! Your job was queued, please be patient..."
                 )
+                L = len(queue)
+                while L > 0:
+                    time.sleep(1)
+                    csv = pd.read_csv("queue.csv")
+                    queue = list(csv["JOB_ID"])
+                    L = len(queue)
+                    if L == 0:
+                        break
+                job_time = time.time()
+                job_author = message.author
+                c = open("queue.csv", "a")
+                c.write(f"{job_time},{str(job_author)}\n")
+                c.close()
                 refactored_code = refactor_code(
                     "downloads/downloaded_file.py", str({attachment.filename})
                 )
-                connection.execute("DELETE from queue WHERE job_id=?", (job_time,))
                 with open(refactored_code, "rb") as file:
                     await message.channel.send(file=File(file))
+                file.close()
+                c = open("queue.csv", "r+")
+                lines = c.readlines()
+                c.seek(0)
+                c.truncate()
+                for line in lines:
+                    if line.split(",")[0] != str(job_time) and line.split(",")[
+                        1
+                    ].replace("\n", "") != str(job_author):
+                        c.write(line)
+                    else:
+                        continue
+                c.close()
     elif message.content:
+        csv = pd.read_csv("queue.csv")
+        queue = list(csv["JOB_ID"])
         print(
             f"Got content {message.content} from {message.author} ({type(message.author)})"
         )
-        post = connection.execute("SELECT * FROM queue").fetchall()
-        if len(post) == 0:
+        if len(queue) == 0:
             job_time = time.time()
-            connection.execute(
-                "INSERT INTO queue (author, job_id) VALUES (?, ?)",
-                (str(message.author), job_time),
-            )
+            job_author = message.author
+            c = open("queue.csv", "a")
+            c.write(f"{job_time},{str(job_author)}\n")
+            c.close()
             newfile, generated_code = generate_code(message.content)
-            connection.execute("DELETE from queue WHERE job_id=?", (job_time,))
             await message.channel.send(generated_code)
             with open(newfile, "rb") as file:
                 await message.channel.send(file=File(file))
         else:
-            L = len(post)
-            while L > 0:
-                L = len(post)
-                time.sleep(2)
-            job_time = time.time()
-            connection.execute(
-                "INSERT INTO queue (author, job_id) VALUES (?, ?)",
-                (str(message.author), job_time),
+            await message.channel.send(
+                f"Hi {str(message.author)}! Your job was queued, please be patient..."
             )
+            L = len(queue)
+            while L > 0:
+                time.sleep(1)
+                csv = pd.read_csv("queue.csv")
+                queue = list(csv["JOB_ID"])
+                L = len(queue)
+                if L == 0:
+                    break
+            job_time = time.time()
+            job_author = message.author
+            c = open("queue.csv", "a")
+            c.write(f"{job_time},{str(job_author)}\n")
+            c.close()
             newfile, generated_code = generate_code(message.content)
-            connection.execute("DELETE from queue WHERE job_id=?", (job_time,))
             await message.channel.send(generated_code)
             with open(newfile, "rb") as file:
                 await message.channel.send(file=File(file))
+            file.close()
+            c = open("queue.csv", "r+")
+            lines = c.readlines()
+            c.seek(0)
+            c.truncate()
+            for line in lines:
+                if line.split(",")[0] != str(job_time) and line.split(",")[1].replace(
+                    "\n", ""
+                ) != str(job_author):
+                    c.write(line)
+                else:
+                    continue
+            c.close()
 
 
 bot.run(TOKEN)
