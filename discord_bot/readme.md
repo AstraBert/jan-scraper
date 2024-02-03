@@ -1,5 +1,7 @@
 # Costumize your own Discord bot with jan-scraper!🥳
 
+### Are you at the beginning of your programming journey? Check out the [tutorial](./tutorial/readme.md) we prepared for you!!!🐼
+
 ## Create a Discord bot
 How do you create a Discord bot? It is really simple!
 1. Go to [Discord](https://discord.com/) and create an account (or log into yours, if you already have one)
@@ -37,8 +39,6 @@ Now follow these steps:
 ```bash
 ## Go to the Co(de)Pilot_bot directory
 cd Co(de)Pilot_bot
-## Initialize the database
-python3 init_db.py
 ## Open bot.py with your favorite code editor
 code bot.py
 ```
@@ -48,7 +48,7 @@ Now, open Jan and follow these steps: `Settings > Models > Deepseek Coder 1.3B Q
 
 Everything should now be set up to run; return to your terminal and prompt:
 ```bash
-## Go to the 
+## Go to the Co(de)Pilot_bot directory and run
 python3 bot.py
 ```
 
