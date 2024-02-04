@@ -44,7 +44,7 @@ code bot.py
 ```
 In the variable `TOKEN`, which is left empty, paste the bot token you copied before. In the variable `CHANNEL_ID`, insert the last number that is displayed in your server's #general channel url when you open it.
 
-Now, open Jan and follow these steps: `Settings > Models > Deepseek Coder 1.3B Q8 > ... > Start model` and `Settings > Advanced > Enable API server`
+Now, open Jan and follow these steps: `Settings > Models > Deepseek Coder 1.3B Q8 > ... > Start model` and `Local API server > Choose model to start > Your-favourite-model > Start server`
 
 Everything should now be set up to run; return to your terminal and prompt:
 ```bash
@@ -76,7 +76,7 @@ code bot.py
 ```
 In the variable `TOKEN`, which is left empty, paste the bot token you copied before. In the variable `CHANNEL_ID`, insert the last number that is displayed in your server's #general channel url when you open it.
 
-Now, open Jan and follow these steps: `Settings > Models > LLama 2 Chat 7B Q4 > ... > Start model` and `Settings > Advanced > Enable API server`
+Now, open Jan and follow these steps: `Settings > Models > LLama 2 Chat 7B Q4 > ... > Start model` and `Local API server > Choose model to start > Your-favourite-model > Start server`
 
 Everything should now be set up to run; return to your terminal and prompt:
 ```bash
