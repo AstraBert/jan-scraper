@@ -89,7 +89,7 @@ Scrape data using the jan-scraper package.
 - **Returns:**
   - `str`: Resulting message from jan-scraper.
 
-### `scraper.activate_jan_api` Function:
+### `scraper.activate_jan_api`
 
 This function automates the activation of Jan application through a series of GUI interactions using the `pyautogui` library. Here's a step-by-step explanation:
 
@@ -103,7 +103,33 @@ This function automates the activation of Jan application through a series of GU
      - Continuously check for the presence of an image (server.png) on the screen, indicating that the application has opened.
      - Click on the located image to proceed.
 
-### `scraper.scrape_jan_through_api` Function:
+
+### `scraper.convert_stream_to_jsonl(stream)`
+
+Convert a text stream from Jan API containing JSON lines into a JSON Lines (.jsonl) file.
+
+- **Parameters:**
+  - `stream` (str): Path to the input text stream file obtained from the Jan API.
+
+- **Returns:**
+  - `str`: Path to the created JSON Lines file.
+
+This function reads the provided text stream file, removes unnecessary lines, and writes the cleaned content into a new JSON Lines file. The resulting file can be used for further processing and analysis of Jan API responses.
+
+
+### `scraper.mine_content_from_jsonl(jsonlfile)`
+
+Extract relevant content from a JSON Lines (.jsonl) file obtained from Jan API responses.
+
+- **Parameters:**
+  - `jsonlfile` (str): Path to the input JSON Lines file.
+
+- **Returns:**
+  - `str`: Mined content from the Jan API response.
+
+This function parses the JSON Lines file, extracts the desired content from the API response, and returns it as a string. The extracted content is typically relevant information obtained from scraping the Jan API, which can be further processed or displayed as needed.
+
+### `scraper.scrape_jan_through_api`:
 
 This function uses the previously defined `activate_jan_api` function and interacts with the API related to the Jan application, to obtain responses to user inputs. 
 
