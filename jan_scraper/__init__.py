@@ -5,7 +5,7 @@ jan_scraper: interact with Jan.ai by sending messages and retrieving the respons
 """
 
 # Version
-__version__ = "0.0.4b0"
+__version__ = "0.0.4b1"
 
 
 ##Errors and Warnings
