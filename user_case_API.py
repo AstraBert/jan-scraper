@@ -79,7 +79,7 @@ def refactor_code(pydocument):
     fmtcode = convert_code_to_curl_json(txt)
     msg = f"Refactor the following code\\n {fmtcode}"
     f.close()
-    response = scrape_jan_through_api(app="jan/Jan.exe", model="deepseek-coder-1.3b", text=msg, name="CodeCopilot", new_instructions="You are an helpful coding assistant", auto=False)
+    response = scrape_jan_through_api(model="deepseek-coder-1.3b", text=msg, name="CodeCopilot", new_instructions="You are an helpful coding assistant", auto=False)
     n = open("code.md", "w")
     n.write(response)
     n.close()
@@ -97,7 +97,7 @@ def refactor_code(pydocument):
 def generate_code(message):
     """Generate Python code using jan_scraper."""
     msg = f"Write a python code to do the following\\n {message}"
-    response = scrape_jan_through_api(app="jan/Jan.exe", model="deepseek-coder-1.3b", text=msg, name="CodeCopilot", new_instructions="You are an helpful coding assistant", auto=False)
+    response = scrape_jan_through_api(model="deepseek-coder-1.3b", text=msg, name="CodeCopilot", new_instructions="You are an helpful coding assistant", auto=False)
     n = open("code.md", "w")
     n.write(response)
     n.close()
