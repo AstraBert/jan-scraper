@@ -279,6 +279,51 @@ def activate_jan_api(app):
     time.sleep(2)
 
 
+def convert_stream_to_jsonl(stream):
+    """
+    Convert a text stream containing JSON lines into a JSON Lines (.jsonl) file.
+
+    Parameters:
+    - stream (str): Path to the input text stream file.
+
+    Returns:
+    - str: Path to the created JSON Lines file.
+    """
+    s = open(stream, "r+")
+    lines = s.readlines()
+    s.close()
+    jsonl_file = os.path.join(
+        os.path.dirname(os.path.realpath(stream)), "response.jsonl"
+    )
+    jsonl_fileobj = open(jsonl_file, "w")
+    for line in lines:
+        if line.replace("\n", "") == "" or line.replace("data: [DONE]\n", "") == "":
+            continue
+        else:
+            jsonl_fileobj.write(line.replace("data: ", ""))
+    jsonl_fileobj.close()
+    return jsonl_file
+
+
+def mine_content_from_jsonl(jsonlfile):
+    """
+    Extract content from a JSON Lines (.jsonl) file containing GPT-3 API response.
+
+    Parameters:
+    - jsonlfile (str): Path to the input JSON Lines file.
+
+    Returns:
+    - str: Mined content from the Jan API response.
+    """
+    results = parse_jsonl_file(
+        jsonlfile
+    )  # Assuming 'parse_jsonl_file' is defined elsewhere
+    response = []
+    for jsonobj in results:
+        response.append(jsonobj["choices"][0]["delta"]["content"])
+    return "".join(response)
+
+
 def scrape_jan_through_api(
     text,
     model,
@@ -291,12 +336,10 @@ def scrape_jan_through_api(
 
     Parameters:
     - text (str): User input text.
-    - app (str): The application to be activated.
     - model (str): The model to be used in the API request.
     - new_instructions (str): Additional instructions for the system content.
     - name (str): Name of the assistant.
     - description (str): Description of the assistant.
-    - auto (bool): Automatically activate Jan API through GUI operations (unstable, better setting it to False)
 
     Returns:
     - str: Response obtained from the API.
@@ -306,28 +349,29 @@ def scrape_jan_through_api(
     system_content = f"Your name is {name} You can be described as {description} You have to follow these instructions {new_instructions}"
     response_exists = os.path.isfile("response.json")
     if response_exists:
-        f = open("response.json", "r+")
+        f = open("response.stream", "r+")
         f.seek(0)
         f.truncate()
         f.close()
     elif not response_exists:
-        f = open("response.json", "w")
+        f = open("response.stream", "w")
         f.close()
 
     command = (
-        'curl http://localhost:1337/v1/chat/completions -H "Content-Type: application/json" -d "{\\"model\\": \\"'
-        + model
-        + '\\", \\"messages\\": [{\\"role\\": \\"system\\", \\"content\\": \\"'
+        'curl http://localhost:1337/v1/chat/completions -H "Content-Type: application/json" -d "{\\"messages\\": [{\\"role\\": \\"system\\", \\"content\\": \\"'
         + system_content
         + '\\"}, {\\"role\\": \\"user\\", \\"content\\": \\"'
         + text
-        + '\\"}]}" > response.json'
+        + '\\"}],\\"model\\": \\"'
+        + model
+        + '\\",\\"stream\\": true}" > response.stream'
     )
 
     cmd = subprocess.run(command, shell=True)
 
     if cmd.returncode == 0:
-        results = parse_jsonl_file("response.json")
-        return results[0]["choices"][0]["message"]["content"]
+        results = convert_stream_to_jsonl("response.stream")
+        answer = mine_content_from_jsonl(results)
+        return answer
     else:
         return "Something went wrong"
