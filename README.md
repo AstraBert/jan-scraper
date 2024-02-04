@@ -153,7 +153,7 @@ From version 0.0.4b0, we decided to deprecate the `auto` parameter. You can, nev
   3. If the file doesn't exist, create it.
   4. Construct a command to make a `curl` request to an API endpoint.
   5. Execute the command using `subprocess.run`.
-  6. If the command is successful, parse the JSON response from "response.json" and return the content of the first choice message. If not, return an error message.
+  6. If the command is successful, parse the JSON response from "response.stream", convert it to "response.jsonl" and return the content of the first choice message. If not, return an error message.
 
 ### `formatter.convert_code_to_curl_json`
 
