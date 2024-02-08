@@ -5,7 +5,7 @@ jan_scraper: interact with Jan.ai by sending messages and retrieving the respons
 """
 
 # Version
-__version__ = "0.0.4b1"
+__version__ = "0.1.0b0"
 
 
 ##Errors and Warnings
@@ -18,3 +18,7 @@ class UnableToFindLocationError(Exception):
 
 class MayActivateOnlyOneModelWarning(Warning):
     """Raise warning if API activation is automatized: may only activate one of the models you have installed, and it may not be your desired one"""
+
+
+class Unrecognizable_Language_Warning(Warning):
+    """Language provided is not among the ones supported by auto-detection... Switching to auto"""
