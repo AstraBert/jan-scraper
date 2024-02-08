@@ -3,6 +3,9 @@ jan-scraper: interact with Jan.ai by sending messages and retrieving the respons
 
 ⚠️DISCLAIMER: This version is still a beta and it is built for small, end-user, customizable projects. The implementation of API scraping brings us closer to the result of optimized scaling for large LLM application in daily life, but we're still far from what we can reach... Stay tuned!
 
+🎉**jan-scraper for conversation??**: Now jan-scraper is optimized also to use Jan as an interface to hold a conversation with several text-generation and text2text-generation HuggingFace models, in 89 different languages, with *your own* pdfs.
+
+⚠️Being a new implementation, the conversator module may still be unstable, throw errors and have some bugs. Moreover, it only support one pdf at a time, so, if you have more, make sure to concatenate all of them in only one file.
 
 ## Overview
 
@@ -33,7 +36,12 @@ Type "help", "copyright", "credits" or "license" for more information.
 
 - Python 3.10 or higher
 - pyautogui (version 0.9.54)
-
+- langdetect (version 1.0.9)
+- deep_translator (version 1.11.4)
+- transformers (version 4.30.2)
+- langchain-community (version 0.0.13)
+- langchain (version 0.1.1)
+- torch (version 2.1.2)
 
 ## Functions
 
@@ -169,7 +177,170 @@ Convert a Python code string to a format suitable for inclusion in a JSON string
 This function takes a Python code string as input and escapes backslashes and double quotes within the code to prepare it for inclusion in a JSON string within a curl command. It also replaces newline characters with '\\n' to ensure proper formatting in the JSON representation.
 
 
-### Example
+### `conversator.generate_id()`
+
+Generate a random 26-character alphanumeric ID.
+
+**Returns**
+- `str`: The generated ID.
+
+**Description**
+This function generates a random alphanumeric ID with a length of 26 characters. It includes a mix of digits and uppercase letters, making it suitable for unique identifiers.
+
+---
+
+### `conversator.create_a_persistent_db(pdfpath)`
+
+Create a persistent database from a PDF file.
+
+**Parameters**
+- `pdfpath` (str): The path to the PDF file.
+
+**Description**
+This function initiates the creation of a persistent database from a PDF file. It involves loading the PDF, splitting documents into smaller chunks, using HuggingFace embeddings to transform text into numerical vectors, and storing the processed data in a Chroma vector store. The time taken for the operation is printed to the standard error output. 
+
+A cache for the embeddings that will be used by your language model will be created in the same directory as your pdf, in a folder named documenttitle_cache (if you have a pdf whose path is "/Users/User/mydata/chat.pdf", the vector store will be: "/Users/User/mydata/chat_cache").
+
+A local vectore store will be created in the same directory as the provided pdf, in a folder named documenttitle_localDB (if you have a pdf whose path is "/Users/User/mydata/chat.pdf", the vector store will be: "/Users/User/mydata/chat_localDB").
+
+
+
+
+### `conversator.jan_chatting(jan_app_path, jan_data_folder, thread_id, hfmodel, model_task, persistent_db_dir, embeddings_cache, pdfpath)`
+
+Implement a chat system using the Jan app, Hugging Face models, and a persistent database.
+
+**Parameters**
+- `jan_app_path` (str): Path to the Jan app executable.
+- `jan_data_folder` (str): Folder containing Jan app data.
+- `thread_id` (str): ID of the chat thread.
+- `hfmodel` (str): Hugging Face model identifier (see `models_source.supported_causalLM_models()` to get to know about available "text-generation" models and `models_source.supported_seq2seqLM_models()` to get to know about available "text2text-generation" models)
+- `model_task` (str): Task for the Hugging Face model.
+- `persistent_db_dir` (str): Directory for the persistent database.
+- `embeddings_cache` (str): Path to cache Hugging Face embeddings.
+- `pdfpath` (str): Path to the PDF file.
+
+**Raises**
+- `KeyboardInterrupt`: Raised if the user interrupts the chat.
+
+**Description**
+This function facilitates interaction with the Jan app, utilizes Hugging Face models, and manages a persistent database. It launches Jan, reads and processes chat messages from a JSON file, queries a conversational retrieval chain, translates responses, and updates the chat thread. The function is designed to handle interruptions with a graceful exit.
+
+### `models_source.longest_in_list(l)`
+
+Find and return the longest element in a list.
+
+**Parameters**
+- `l` (list): List of elements.
+
+**Returns**
+- `Any`: The longest element in the list.
+
+**Description**
+This function takes a list of elements as input and identifies the longest element within it. The result is the element with the maximum length.
+
+
+### `models_source.choose_right_model(model_name, model_task)`
+
+Choose the right Hugging Face model based on the provided model name and task.
+
+**Parameters**
+- `model_name` (str): Name or identifier of the Hugging Face model.
+- `model_task` (str): Task associated with the model.
+
+**Returns**
+- `str`: The chosen Hugging Face model.
+
+**Raises**
+- `Exception`: Raised if the model is not supported.
+
+**Description**
+This function selects the appropriate Hugging Face model by analyzing the model name and task. It supports two tasks: "text2text-generation" and "text-generation." Depending on the task, it matches keywords in the model name and returns the most suitable model. If multiple matches are found, it chooses the one with the longest keyword.
+
+
+### `models_source.supported_causalLM_models()`
+
+Print a list of supported causal language models.
+
+**Description**
+This function prints a list of supported causal language models.
+
+
+### `models_source.supported_seq2seqLM_models()`
+
+Print a list of supported sequence-to-sequence language models.
+
+**Description**
+This function prints a list of supported sequence-to-sequence language models.
+
+### `anylang.supported_languages()`
+
+Print a list of supported languages.
+
+**Description**
+This function prints a list of supported languages based on the keys in the `LANGNAMES` dictionary.
+
+
+### `anylang.TranslateFunctions`
+
+A class for translating text between languages using Google Translate.
+
+#### **Attributes**
+- `text` (str): The text to be translated.
+- `destination` (str): The target language for translation.
+- `original` (str): The detected or specified source language for translation.
+
+#### **Methods**
+- `__init__(text, destination)`: Initialize the TranslateFunctions object.
+- `translatef()`: Translate the text to the target language.
+
+#### **Raises**
+- `Unrecognizable_Language_Warning`: Warns if the provided language is not supported for auto-detection.
+
+#### **Description**
+The `TranslateFunctions` class encapsulates functionality for translating text between languages using Google Translate. It initializes with a text and a destination language, and automatically detects the source language (or defaults to "auto"). The `translatef` method performs the translation, and the class raises a warning if the provided language is not recognized for auto-detection.
+
+**Usage Example**
+```python
+translator = TranslateFunctions("Hello, world!", destination="es")
+translation = translator.translatef()
+```
+
+
+#### `anylang.TranslateFunctions.__init__(text, destination)`
+
+Initialize the TranslateFunctions object.
+
+**Parameters**
+- `text` (str): The text to be translated.
+- `destination` (str): The target language for translation.
+
+**Raises**
+- `Unrecognizable_Language_Warning`: Warns if the provided language is not supported for auto-detection.
+
+**Description**
+This method initializes a `TranslateFunctions` object with a given text and destination language. It attempts to detect the source language; if unsuccessful, it defaults to "auto" and raises a warning.
+
+
+
+#### `anylang.TranslateFunctions.translatef()`
+
+Translate the text to the target language.
+
+**Returns**
+- `str`: The translated text.
+
+**Description**
+This method utilizes Google Translate to translate the stored text to the specified destination language. The translated text is returned as a string.
+
+**Usage Example**
+```python
+translator = TranslateFunctions("Hello, world!", destination="es")
+translation = translator.translatef()
+print(translation)  # Output: ¡Hola Mundo!
+```
+
+## Example
 
 ```python
 import jan_scraper.scraper
@@ -199,6 +370,10 @@ jan_scraper.scraper.activate_jan_api(app_path)
 response = jan_scraper.scraper.scrape_jan_through_api(model="tinyllama-1.1b", text="How is it to be ruling on such a big Empire?", name="Carolus Magnus", new_instructions="You are an emperor from the Middle Ages")
 
 print("Jan's Response:", response)
+
+# Do you want to use your own HF model with your own pdf? Do something like this!
+create_a_persistent_db("mydata/chat.pdf") # Creates a local vectorestore database at mydata/chat_localDB and a local embeddings cache at mydata/chat_cache
+jan_chatting(jan_app_path="Jan.exe",jan_data_folder="Users/User/jan",thread_id="jan_1706919400",hfmodel="google/flan-t5-base",model_task="text2text-generation",persistent_db_dir="mydata/chat_localDB",embeddings_cache="mydata/chat_cache",pdfpath="mydata/chat.pdf")
 ```
 
 Find more elaborate user cases in [user_case_noAPI.py](https://github.com/AstraBert/jan-scraper/tree/main/user_case_noAPI.py) and in [user_case_API.py](https://github.com/AstraBert/jan-scraper/tree/main/user_case_API.py). Make sure also not to miss the [Discord bot application user cases](https://github.com/AstraBert/jan-scraper/tree/main/discord_bot)!🐍
@@ -211,3 +386,8 @@ This project is licensed under the AGPL-v3.0 License - see the [LICENSE](https:/
 
 - [pyautogui](https://github.com/asweigart/pyautogui)
 - [Jan.ai](https://jan.ai/)
+- [langdetect](https://github.com/Mimino666/langdetect)
+- [deep_translator](https://github.com/nidhaloff/deep_translator)
+- [transformers](https://github.com/huggingface/transformers)
+- [langchain and langchain-community](https://github.com/langchain-ai/langchain)
+- [torch](https://pytorch.org/)
